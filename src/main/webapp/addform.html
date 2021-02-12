@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Add Form</title>
+<style>
+body {
+	color: #fff;
+	background: #3598dc;
+}
+
+ul {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	background-color: #dddddd;
+}
+
+li {
+	float: left;
+}
+
+li a {
+	display: block;
+	padding: 8px;
+}
+</style>
+</head>
+<body onload="loggedInUser()">
+	<ul>
+		<li><a href="http://localhost:8080/Project1/main.html">Home</a>
+		<li><a href="http://localhost:8080/Project1/addform.html">New
+				Request</a>
+		<li><a href="http://localhost:8080/Project1/viewforms.html">View
+				My Forms</a>
+		<li><a href="http://localhost:8080/Project1/actionitems.html">Action
+				Items</a>
+	</ul>
+    <h1>Create a new form</h1>
+    <div id="form">
+        <label>Date</label>
+        <input type="text" id="dated">
+        <br>
+        <label>Time</label>
+        <input type="text" id="time">
+        <label>Location</label>
+        <input type="text" id="location">
+        <label>Description</label>
+        <input type="text" id="description">
+        <label>Cost</label>
+        <input type="number" id="cost">
+        <label>Grade Format</label>
+            <select id="grade_formats">
+                <option value="Presentation">Presentation</option>
+                <option value="Examination">Examination</option>
+            </select>
+        <label>Type</label>
+            <select id="types">
+                <option value="Certification">Certification</option>
+                <option value="Seminar">Seminar</option>
+                <option value="Technical Course">Technical Course</option>
+            </select>
+        <label>Justification</label>
+        <input type="text" id="justification">
+        <br>
+        <button type="button" onclick="addForm()">Submit</button>
+    </div>
+</body>
+<script>
+	function loggedInUser() {
+		let xhttp = new XMLHttpRequest();
+
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				console.log(this.responseText);
+                let employee = JSON.parse(this.responseText)
+
+                employeeID = employee.id;
+                supervisorID = employee.supervisorID;
+                deptID = employee.deptID;
+			}
+		}
+
+		xhttp.open("GET", "http://localhost:8080/Project1/loggedInUser.do", true);
+
+		xhttp.setRequestHeader('Content-Type', 'application/json');
+
+		xhttp.send();
+	}
+
+    function addForm() {
+        let xhttp = new XMLHttpRequest();
+
+        let adated = document.getElementById('dated').value;
+		let atime = document.getElementById('time').value;
+        let alocation = document.getElementById('location').value;
+        let adescription = document.getElementById('description').value;
+        let acost = document.getElementById('cost').value;
+        let agradeformat = document.getElementById('grade_formats').value;
+        let atype = document.getElementById('types').value;
+        let ajustification = document.getElementById('justification').value;
+
+        let formR = {
+            employee_id: employeeID,
+            dated: adated,
+            time: atime,
+            location: alocation,
+            description: adescription,
+            cost: acost,
+            grade_format: agradeformat,
+            type: atype,
+            justification: ajustification,
+            supervisor_id: supervisorID,
+            department_id: deptID
+        }
+
+        xhttp.onreadystatechange = function() {
+            if(this.readyState == 4 && this.status == 200){
+                console.log(this.responseText);
+                window.location.href="http://localhost:8080/Project1/main.html"
+            }
+        }
+
+        xhttp.open("POST", "http://localhost:8080/Project1/addForm.do", true);
+
+        xhttp.send(JSON.stringify(formR));
+    }
+</script>
+</html>

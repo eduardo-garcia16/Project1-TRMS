@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+<style>
+body {
+	color: #fff;
+	background: #3598dc;
+}
+
+ul {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	background-color: #dddddd;
+}
+
+li {
+	float: left;
+}
+
+li a {
+	display: block;
+	padding: 8px;
+}
+</style>
+</head>
+<body onload="loggedInUser()">
+	<ul>
+		<li><a href="http://localhost:8080/Project1/main.html">Home</a>
+		<li><a href="http://localhost:8080/Project1/addform.html">New
+				Request</a>
+		<li><a href="http://localhost:8080/Project1/viewforms.html">View
+				My Forms</a>
+		<li><a href="http://localhost:8080/Project1/actionitems.html">Action
+				Items</a>
+	</ul>
+    <div id="welcome">
+        <h1>Welcome, <u id="name">user</u></h1>
+        <br>
+        <h2>Your job: <u id="role">role</u></h2>
+    </div>
+</body>
+<script>
+	function loggedInUser() {
+		let xhttp = new XMLHttpRequest();
+
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				console.log(this.responseText);
+                let employee = JSON.parse(this.responseText)
+                document.getElementById('name').innerHTML = employee.firstName+" "+employee.lastName;
+                document.getElementById('role').innerHTML = employee.role;
+
+                employeeID = employee.id;
+			}
+		}
+
+		xhttp.open("GET", "http://localhost:8080/Project1/loggedInUser.do", true);
+
+		xhttp.setRequestHeader('Content-Type', 'application/json');
+
+		xhttp.send();
+	}
+</script>
+</html>

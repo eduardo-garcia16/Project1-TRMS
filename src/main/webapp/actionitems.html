@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>My Forms</title>
+<style>
+body {
+	color: #fff;
+	background: #3598dc;
+}
+
+ul {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	background-color: #dddddd;
+}
+
+li {
+	float: left;
+}
+
+li a {
+	display: block;
+	padding: 8px;
+}
+
+.table {
+    font-size: large;
+    color: black;
+}
+</style>
+</head>
+<body onload="loggedInUser()">
+	<ul>
+		<li><a href="http://localhost:8080/Project1/main.html">Home</a>
+		<li><a href="http://localhost:8080/Project1/addform.html">New
+				Request</a>
+		<li><a href="http://localhost:8080/Project1/viewforms.html">View
+				My Forms</a>
+		<li><a href="http://localhost:8080/Project1/actionitems.html">Action
+				Items</a>
+	</ul>
+    <h1>Click <u onclick="getItems()">here</u> to populate your <b>action item</b> forms below!</h1>
+    <h3 id="updatecontroller">Enter form ID, approval, and reason to update your action items:<br>
+        <label>Form ID: </label><input type="number" placeholder="Form ID" id="formid" required>
+        <label>Approval: </label>
+            <select id="formapproval">
+                <option value="Approved">Approve</option>
+                <option value="Denied">Deny</option>
+            </select>
+        <label>Reason: </label><input type="text" placeholder="Reason" id="formreason" required>
+        <button type="button" onclick="sendItems()">Submit Decision</button>
+    </h3>
+
+    <h2 id="formTypes"></h2>
+    <table class="table">
+        <thead>
+        <tr><td><u>Form ID:</u></td> <td>Employee ID:</td> <td><u>Date:</u></td> <td>Location:</td> <td><u>Description:</u></td> <td>Cost:</td> <td><u>Type:</u></td> <td>Justification:</td>
+
+        </thead>
+        <tbody id = "approvalTableBody">
+        </tbody>
+        </table>
+</body>
+<script>
+	function loggedInUser() {
+		let xhttp = new XMLHttpRequest();
+
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				console.log(this.responseText);
+                let employee = JSON.parse(this.responseText)
+
+                curremployeeID = employee.id;
+                currsupervisorID = employee.supervisorID;
+                currdeptID = employee.deptID;
+                currBossStatus = employee.isDeptHead;
+                currRole = employee.role;
+			}
+		}
+
+		xhttp.open("GET", "http://localhost:8080/Project1/loggedInUser.do", true);
+
+		xhttp.setRequestHeader('Content-Type', 'application/json');
+
+		xhttp.send();
+	}
+
+    function getItems() {
+        if(currBossStatus == "1") {
+            getDeptItems();
+        }
+        else if(currRole == "BenCo") {
+            getBenCoItems();
+        }
+        else {
+            getSuperItems();
+        }
+    }
+
+    function sendItems() {
+        if(currBossStatus == "1") {
+            sendDeptItems();
+        }
+        else if(currRole == "BenCo") {
+            sendBenCoItems();
+        }
+        else {
+            sendSuperItems();
+        }
+    }
+
+    function getDeptItems() {
+        let xhttp = new XMLHttpRequest();
+
+        xhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                console.log(this.responseText);
+
+                approvalForms = JSON.parse(this.responseText);
+                console.log(approvalForms);
+
+                document.getElementById("formTypes").innerHTML = "<b>Action Items:<b>";
+            	
+                const tbody = document.getElementById("approvalTableBody");
+                
+                for (var i = 0; i < approvalForms.length; i++) {
+                    var anid = approvalForms[i].id;
+                    var anempid = approvalForms[i].employee_id;
+                    var andate = approvalForms[i].dated;
+                    var anlocation = approvalForms[i].location;
+                    var andesc = approvalForms[i].description;
+                    var ancost = approvalForms[i].cost;
+                    var antype = approvalForms[i].type;
+                    var anjustification = approvalForms[i].justification;
+
+                    let row = tbody.insertRow();
+                    let currid = row.insertCell(0);
+                    currid.innerHTML = anid;
+                    let currempid = row.insertCell(1);
+                    currempid.innerHTML = anempid;
+                    let currdate = row.insertCell(2);
+                    currdate.innerHTML = andate;
+                    let currlocation = row.insertCell(3);
+                    currlocation.innerHTML = anlocation;
+                    let currdesc = row.insertCell(4);
+                    currdesc.innerHTML = andesc;
+                    let currcost = row.insertCell(5);
+                    currcost.innerHTML = ancost;
+                    let currtype = row.insertCell(6);
+                    currtype.innerHTML = antype;
+                    let currjustification = row.insertCell(7);
+                    currjustification.innerHTML = anjustification;
+                }
+
+            }
+        }
+
+        xhttp.open("GET", "http://localhost:8080/Project1/getFormsByDeptID.do?emp_id="+curremployeeID, true);
+        xhttp.send();
+    }
+
+    function getDeptItems() {
+        let xhttp = new XMLHttpRequest();
+
+        xhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                console.log(this.responseText);
+
+                approvalForms = JSON.parse(this.responseText);
+                console.log(approvalForms);
+
+                document.getElementById("formTypes").innerHTML = "<b>Action Items:<b>";
+            	
+                const tbody = document.getElementById("approvalTableBody");
+                
+                for (var i = 0; i < approvalForms.length; i++) {
+                    var anid = approvalForms[i].id;
+                    var anempid = approvalForms[i].employee_id;
+                    var andate = approvalForms[i].dated;
+                    var anlocation = approvalForms[i].location;
+                    var andesc = approvalForms[i].description;
+                    var ancost = approvalForms[i].cost;
+                    var antype = approvalForms[i].type;
+                    var anjustification = approvalForms[i].justification;
+
+                    let row = tbody.insertRow();
+                    let currid = row.insertCell(0);
+                    currid.innerHTML = anid;
+                    let currempid = row.insertCell(1);
+                    currempid.innerHTML = anempid;
+                    let currdate = row.insertCell(2);
+                    currdate.innerHTML = andate;
+                    let currlocation = row.insertCell(3);
+                    currlocation.innerHTML = anlocation;
+                    let currdesc = row.insertCell(4);
+                    currdesc.innerHTML = andesc;
+                    let currcost = row.insertCell(5);
+                    currcost.innerHTML = ancost;
+                    let currtype = row.insertCell(6);
+                    currtype.innerHTML = antype;
+                    let currjustification = row.insertCell(7);
+                    currjustification.innerHTML = anjustification;
+                }
+
+            }
+        }
+
+        xhttp.open("GET", "http://localhost:8080/Project1/getAllPendingForms.do", true);
+        xhttp.send();
+    }
+
+    function getSuperItems() {
+        let xhttp = new XMLHttpRequest();
+
+        xhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                console.log(this.responseText);
+
+                approvalForms = JSON.parse(this.responseText);
+                console.log(approvalForms);
+
+                document.getElementById('formTypes').innerHTML = "<b>Action Items:<b>";
+            	
+                const tbody = document.getElementById("approvalTableBody");
+                
+                for (var i = 0; i < approvalForms.length; i++) {
+                    var anid = approvalForms[i].id;
+                    var anempid = approvalForms[i].employee_id;
+                    var andate = approvalForms[i].dated;
+                    var anlocation = approvalForms[i].location;
+                    var andesc = approvalForms[i].description;
+                    var ancost = approvalForms[i].cost;
+                    var antype = approvalForms[i].type;
+                    var anjustification = approvalForms[i].justification;
+
+                    let row = tbody.insertRow();
+                    let currid = row.insertCell(0);
+                    currid.innerHTML = anid;
+                    let currempid = row.insertCell(1);
+                    currempid.innerHTML = anempid;
+                    let currdate = row.insertCell(2);
+                    currdate.innerHTML = andate;
+                    let currlocation = row.insertCell(3);
+                    currlocation.innerHTML = anlocation;
+                    let currdesc = row.insertCell(4);
+                    currdesc.innerHTML = andesc;
+                    let currcost = row.insertCell(5);
+                    currcost.innerHTML = ancost;
+                    let currtype = row.insertCell(6);
+                    currtype.innerHTML = antype;
+                    let currjustification = row.insertCell(7);
+                    currjustification.innerHTML = anjustification;
+                }
+
+            }
+        }
+
+        xhttp.open("GET", "http://localhost:8080/Project1/getFormsBySupervisorID.do?emp_id="+curremployeeID, true);
+        xhttp.send();
+    }
+
+    function sendDeptItems() {
+        let xhttp = new XMLHttpRequest();
+
+        let aid = document.getElementById('formid').value;
+		let aapproval = document.getElementById('formapproval').value;
+        let areason = document.getElementById('formreason').value;
+
+        // The fields being passed are listed with the 'supervisor_' prefix but only because
+        // that is the Form object Java is accepting. The endpoint still manages updating
+        // the appropriate fields in the db
+        let formR = {
+            id: anid,
+            supervisor_approval: aapproval,
+            supervisor_reason: areason
+        }
+
+        xhttp.onreadystatechange = function() {
+            if(this.readyState == 4 && this.status == 200){
+                console.log(this.responseText);
+                window.location.href="http://localhost:8080/Project1/actionitems.html"
+            }
+        }
+
+        xhttp.open("POST", "http://localhost:8080/Project1/updateDeptForm.do", true);
+
+        xhttp.send(JSON.stringify(formR));
+    }
+
+    function sendSuperItems() {
+        let xhttp = new XMLHttpRequest();
+
+        let aid = document.getElementById('formid').value;
+		let aapproval = document.getElementById('formapproval').value;
+        let areason = document.getElementById('formreason').value;
+
+        let formR = {
+            id: anid,
+            supervisor_approval: aapproval,
+            supervisor_reason: areason
+        }
+
+        xhttp.onreadystatechange = function() {
+            if(this.readyState == 4 && this.status == 200){
+                console.log(this.responseText);
+                window.location.href="http://localhost:8080/Project1/actionitems.html"
+            }
+        }
+
+        xhttp.open("POST", "http://localhost:8080/Project1/updateSupervisorForm.do", true);
+
+        xhttp.send(JSON.stringify(formR));
+    }
+
+    function sendBenCoItems() {
+        let xhttp = new XMLHttpRequest();
+
+        let aid = document.getElementById('formid').value;
+		let aapproval = document.getElementById('formapproval').value;
+        let areason = document.getElementById('formreason').value;
+
+        // The fields being passed are listed with the 'supervisor_' prefix but only because
+        // that is the Form object Java is accepting. The endpoint still manages updating
+        // the appropriate fields in the db
+        let formR = {
+            id: anid,
+            supervisor_approval: aapproval,
+            supervisor_reason: areason
+        }
+
+        xhttp.onreadystatechange = function() {
+            if(this.readyState == 4 && this.status == 200){
+                console.log(this.responseText);
+                window.location.href="http://localhost:8080/Project1/actionitems.html"
+            }
+        }
+
+        xhttp.open("POST", "http://localhost:8080/Project1/updateBencoForm.do", true);
+
+        xhttp.send(JSON.stringify(formR));
+    }
+</script>
+</html>

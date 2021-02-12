@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>My Forms</title>
+<style>
+body {
+	color: #fff;
+	background: #3598dc;
+}
+
+ul {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	background-color: #dddddd;
+}
+
+li {
+	float: left;
+}
+
+li a {
+	display: block;
+	padding: 8px;
+}
+
+.table {
+    font-size: large;
+    color: black;
+}
+</style>
+</head>
+<body onload="loggedInUser()">
+	<ul>
+		<li><a href="http://localhost:8080/Project1/main.html">Home</a>
+		<li><a href="http://localhost:8080/Project1/addform.html">New
+				Request</a>
+		<li><a href="http://localhost:8080/Project1/viewforms.html">View
+				My Forms</a>
+		<li><a href="http://localhost:8080/Project1/actionitems.html">Action
+				Items</a>
+	</ul>
+    <h1>Click <u onclick="getPendingForms()">here</u> to view your <b>pending</b> forms below!</h1>
+    <h1>Click <u onclick="getApprovedForms()">here</u> to view your <b>approved</b> forms below!</h1>
+    <h1>Click <u onclick="getDeniedForms()">here</u> to view your <b>denied</b> forms below!</h1>
+
+    <h2 id="formTypes"></h2>
+    <table class="table">
+        <thead>
+        <tr><td><u>Form ID:</u></td> <td>Location:</td> <td><u>Description:</u></td> <td>Justification:</td> <td><u>Direct Supervisor Approval:</u></td> <td>Direct Supervisor Reason:</td> <td><u>Department Head Approval:</u></td> <td>Department Head Reason:</td> <td><u>BenCo Approval:</u></td> <td>BenCo Reason:</td> <td><u>Status:</u></td></tr></u>
+        </thead>
+        <tbody id = "approvalTableBody">
+        </tbody>
+        </table>
+</body>
+<script>
+	function loggedInUser() {
+		let xhttp = new XMLHttpRequest();
+
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				console.log(this.responseText);
+                let employee = JSON.parse(this.responseText)
+
+                curremployeeID = employee.id;
+                currsupervisorID = employee.supervisorID;
+                currdeptID = employee.deptID;
+			}
+		}
+
+		xhttp.open("GET", "http://localhost:8080/Project1/loggedInUser.do", true);
+
+		xhttp.setRequestHeader('Content-Type', 'application/json');
+
+		xhttp.send();
+	}
+
+    function getPendingForms() {
+        let xhttp = new XMLHttpRequest();
+
+        xhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                console.log(this.responseText);
+
+                approvalForms = JSON.parse(this.responseText);
+                console.log(approvalForms);
+
+                document.getElementById("formTypes").innerHTML = "<b>Pending Forms:<b>";
+            	
+                const tbody = document.getElementById("approvalTableBody");
+                
+                for (var i = 0; i < approvalForms.length; i++) {
+                    var anid = approvalForms[i].id;
+                    var anlocation = approvalForms[i].location;
+                    var andescription = approvalForms[i].description;
+                    var anjustification = approvalForms[i].justification;
+                    var ansuppapp = approvalForms[i].supervisor_approval;
+                    var ansuppreason = approvalForms[i].supervisor_reason;
+                    var andeptapp = approvalForms[i].department_approval;
+                    var andeptreason = approvalForms[i].department_reason;
+                    var anbenapp = approvalForms[i].benco_approval;
+                    var anbenreason = approvalForms[i].benco_reason;
+                    var anstatus = approvalForms[i].status;
+
+                    let row = tbody.insertRow();
+                    let currid = row.insertCell(0);
+                    currid.innerHTML = anid;
+                    let currLocation = row.insertCell(1);
+                    currLocation.innerHTML = anlocation;
+                    let currDescription = row.insertCell(2);
+                    currDescription.innerHTML = andescription;
+                    let currJustification = row.insertCell(3);
+                    currJustification.innerHTML = anjustification;
+                    let currSuppApp = row.insertCell(4);
+                    currSuppApp.innerHTML = ansuppapp;
+                    let currSuppReason = row.insertCell(5);
+                    currSuppReason.innerHTML = ansuppreason;
+                    let currDeptApp = row.insertCell(6);
+                    currDeptApp.innerHTML = andeptapp;
+                    let currDeptReason = row.insertCell(7);
+                    currDeptReason.innerHTML = andeptreason;
+                    let currBenApp = row.insertCell(8);
+                    currBenApp.innerHTML = anbenapp;
+                    let currBenReason = row.insertCell(9);
+                    currBenReason.innerHTML = anbenreason;
+                    let currStatus = row.insertCell(10);
+                    currStatus.innerHTML = anstatus;
+                }
+
+            }
+        }
+
+        xhttp.open("GET", "http://localhost:8080/Project1/getPendingFormsByEmployeeID.do?emp_id="+curremployeeID, true);
+        xhttp.send();
+    }
+
+    function getApprovedForms() {
+        let xhttp = new XMLHttpRequest();
+
+        xhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                console.log(this.responseText);
+
+                approvalForms = JSON.parse(this.responseText);
+                console.log(approvalForms);
+
+                document.getElementById("formTypes").innerHTML = "<b>Approved Forms:<b>";
+            	
+                const tbody = document.getElementById("approvalTableBody");
+                
+                for (var i = 0; i < approvalForms.length; i++) {
+                    var anid = approvalForms[i].id;
+                    var anlocation = approvalForms[i].location;
+                    var andescription = approvalForms[i].description;
+                    var anjustification = approvalForms[i].justification;
+                    var ansuppapp = approvalForms[i].supervisor_approval;
+                    var ansuppreason = approvalForms[i].supervisor_reason;
+                    var andeptapp = approvalForms[i].department_approval;
+                    var andeptreason = approvalForms[i].department_reason;
+                    var anbenapp = approvalForms[i].benco_approval;
+                    var anbenreason = approvalForms[i].benco_reason;
+                    var anstatus = approvalForms[i].status;
+
+                    let row = tbody.insertRow();
+                    let currid = row.insertCell(0);
+                    currid.innerHTML = anid;
+                    let currLocation = row.insertCell(1);
+                    currLocation.innerHTML = anlocation;
+                    let currDescription = row.insertCell(2);
+                    currDescription.innerHTML = andescription;
+                    let currJustification = row.insertCell(3);
+                    currJustification.innerHTML = anjustification;
+                    let currSuppApp = row.insertCell(4);
+                    currSuppApp.innerHTML = ansuppapp;
+                    let currSuppReason = row.insertCell(5);
+                    currSuppReason.innerHTML = ansuppreason;
+                    let currDeptApp = row.insertCell(6);
+                    currDeptApp.innerHTML = andeptapp;
+                    let currDeptReason = row.insertCell(7);
+                    currDeptReason.innerHTML = andeptreason;
+                    let currBenApp = row.insertCell(8);
+                    currBenApp.innerHTML = anbenapp;
+                    let currBenReason = row.insertCell(9);
+                    currBenReason.innerHTML = anbenreason;
+                    let currStatus = row.insertCell(10);
+                    currStatus.innerHTML = anstatus;
+                }
+
+            }
+        }
+
+        xhttp.open("GET", "http://localhost:8080/Project1/getApprovedFormsByEmployeeID.do?emp_id="+curremployeeID, true);
+        xhttp.send();
+    }
+
+    function getDeniedForms() {
+        let xhttp = new XMLHttpRequest();
+
+        xhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                console.log(this.responseText);
+
+                approvalForms = JSON.parse(this.responseText);
+                console.log(approvalForms);
+
+                document.getElementById("formTypes").innerHTML = "<b>Denied Forms:<b>";
+            	
+                const tbody = document.getElementById("approvalTableBody");
+                
+                for (var i = 0; i < approvalForms.length; i++) {
+                    var anid = approvalForms[i].id;
+                    var anlocation = approvalForms[i].location;
+                    var andescription = approvalForms[i].description;
+                    var anjustification = approvalForms[i].justification;
+                    var ansuppapp = approvalForms[i].supervisor_approval;
+                    var ansuppreason = approvalForms[i].supervisor_reason;
+                    var andeptapp = approvalForms[i].department_approval;
+                    var andeptreason = approvalForms[i].department_reason;
+                    var anbenapp = approvalForms[i].benco_approval;
+                    var anbenreason = approvalForms[i].benco_reason;
+                    var anstatus = approvalForms[i].status;
+
+                    let row = tbody.insertRow();
+                    let currid = row.insertCell(0);
+                    currid.innerHTML = anid;
+                    let currLocation = row.insertCell(1);
+                    currLocation.innerHTML = anlocation;
+                    let currDescription = row.insertCell(2);
+                    currDescription.innerHTML = andescription;
+                    let currJustification = row.insertCell(3);
+                    currJustification.innerHTML = anjustification;
+                    let currSuppApp = row.insertCell(4);
+                    currSuppApp.innerHTML = ansuppapp;
+                    let currSuppReason = row.insertCell(5);
+                    currSuppReason.innerHTML = ansuppreason;
+                    let currDeptApp = row.insertCell(6);
+                    currDeptApp.innerHTML = andeptapp;
+                    let currDeptReason = row.insertCell(7);
+                    currDeptReason.innerHTML = andeptreason;
+                    let currBenApp = row.insertCell(8);
+                    currBenApp.innerHTML = anbenapp;
+                    let currBenReason = row.insertCell(9);
+                    currBenReason.innerHTML = anbenreason;
+                    let currStatus = row.insertCell(10);
+                    currStatus.innerHTML = anstatus;
+                }
+
+            }
+        }
+
+        xhttp.open("GET", "http://localhost:8080/Project1/getDeniedFormsByEmployeeID.do?emp_id="+curremployeeID, true);
+        xhttp.send();
+    }
+</script>
+</html>
